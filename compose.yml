@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    environment:
+      POSTGRES_DB: kazan_events
+      POSTGRES_USER: events
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-events_local_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/nelkor/kazan-events:sha-a301a8359711517a9d1f81112ee3ceae8c3c47b2
+    environment:
+      PG_HOST: db
+      PG_PORT: "5432"
+      PG_DB_NAME: kazan_events
+      PG_USER_NAME: events
+      PG_USER_PASSWORD: ${POSTGRES_PASSWORD:-events_local_password}
+      SEED_MODE: sample
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/health/ready', timeout=3).close()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${APP_PORT:-8085}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/index.html"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

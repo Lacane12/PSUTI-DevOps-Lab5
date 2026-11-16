@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f2ec">
+    <meta name="description" content="Афиша Казани: выбирайте события по жанру, дате и стоимости билета.">
+    <title>Куда в Казани | Афиша событий</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="site-header page-width">
+      <a class="brand" href="/" aria-label="Куда в Казани, главная">
+        <span class="brand-mark" aria-hidden="true">к.</span>
+        <span>куда<span class="brand-light"> в Казани</span></span>
+      </a>
+      <span class="header-note"><span class="location-dot" aria-hidden="true"></span> Город, в котором есть планы</span>
+      <a class="header-link" href="#catalog">Смотреть афишу <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main class="page-width">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="small-star" aria-hidden="true">✳</span> КАЗАНЬ. СОБЫТИЯ. ВЫ.</p>
+          <h1 id="hero-title">Хорошие планы<br>начинаются <em>здесь.</em></h1>
+          <p class="hero-description">Концерт любимой группы, вечер в театре или что-то новое.<br class="desktop-break"> Найдите событие под своё настроение и бюджет.</p>
+          <a href="#catalog" class="hero-link">Выбрать, куда пойти <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="art-orbit orbit-one"></span><span class="art-orbit orbit-two"></span>
+          <span class="art-word">ВЫХОДИ<br>В ГОРОД</span>
+          <span class="art-star">✳</span>
+          <span class="art-caption">ВПЕЧАТЛЕНИЯ БЛИЖЕ, ЧЕМ КАЖЕТСЯ</span>
+          <span class="art-ticket">КАЗАНЬ <span>↗</span> ВХОД В НОВЫЙ ДЕНЬ</span>
+        </div>
+      </section>
+
+      <section id="catalog" class="catalog" aria-labelledby="catalog-title">
+        <div class="section-heading">
+          <div><p class="eyebrow muted">ВАШ СЛЕДУЮЩИЙ ВЫХОД</p><h2 id="catalog-title">Афиша событий<span class="title-dot">.</span></h2></div>
+          <span class="timezone">Все даты и время по Казани (МСК)</span>
+        </div>
+        <div class="catalog-layout">
+          <aside class="filter-panel" aria-label="Фильтры событий">
+            <form id="filters">
+              <div class="filter-title"><h3>Что вам интересно?</h3><span aria-hidden="true">☷</span></div>
+              <label for="genre">Жанр</label>
+              <select id="genre" name="genre_code" disabled><option value="">Все жанры</option></select>
+              <fieldset>
+                <legend>Даты события</legend>
+                <label class="input-caption" for="date-from">С</label>
+                <input id="date-from" name="date_from" type="date" max="9998-12-31">
+                <label class="input-caption" for="date-to">По включительно</label>
+                <input id="date-to" name="date_to" type="date" max="9998-12-31">
+              </fieldset>
+              <fieldset>
+                <legend>Цена билета, ₽</legend>
+                <div class="price-inputs">
+                  <div><label class="input-caption" for="price-min">От</label><input id="price-min" name="price_min" type="number" min="0" max="2147483647" step="1" placeholder="0" inputmode="numeric"></div>
+                  <div><label class="input-caption" for="price-max">До</label><input id="price-max" name="price_max" type="number" min="0" max="2147483647" step="1" placeholder="Любая" inputmode="numeric"></div>
+                </div>
+                <p class="field-hint">Укажите 0 в поле "До", чтобы найти бесплатные события.</p>
+              </fieldset>
+              <p id="validation-message" class="validation-message" role="alert" hidden></p>
+              <button class="button primary" type="submit">Найти события <span aria-hidden="true">↗</span></button>
+              <button id="reset-filters" class="reset-button" type="button">Сбросить фильтры</button>
+            </form>
+            <div class="filter-note"><span aria-hidden="true">✳</span><p>Для спонтанных планов<br>и особенных вечеров.</p></div>
+          </aside>
+
+          <div class="results-panel">
+            <div class="results-toolbar">
+              <p id="result-count" role="status" aria-live="polite">Загружаем афишу…</p>
+              <div class="sort-control"><label for="sort">Сначала</label><select id="sort" name="sort"><option value="starts_at">Ближайшие по дате</option><option value="-starts_at">Поздние по дате</option><option value="price_rub">Дешевле</option><option value="-price_rub">Дороже</option></select></div>
+            </div>
+            <p id="applied-filters" class="applied-filters">Все жанры · Любые даты · Любая цена</p>
+            <div id="events" class="events-list" aria-busy="true"></div>
+            <div id="message-panel" class="message-panel" hidden>
+              <span id="message-icon" class="message-icon" aria-hidden="true">↗</span>
+              <h3 id="message-title"></h3><p id="message-text"></p>
+              <button id="message-action" class="button secondary" type="button">Попробовать ещё раз</button>
+            </div>
+            <nav id="pagination" class="pagination" aria-label="Страницы событий" hidden>
+              <button id="previous" class="page-button" type="button">← Назад</button>
+              <span id="page-number" aria-live="polite"></span>
+              <button id="next" class="page-button" type="button">Дальше →</button>
+            </nav>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer page-width"><a class="brand footer-brand" href="/">куда<span class="brand-light"> в Казани</span></a><span>Больше поводов выйти из дома.</span><span class="footer-meta">Афиша города · Учебный проект</span></footer>
+
+    <template id="event-template">
+      <article class="event-card">
+        <div class="event-date"><span class="date-day"></span><span class="date-month"></span><span class="date-year"></span></div>
+        <div class="event-content">
+          <div class="event-tags"><span class="genre-tag"></span><span class="age-tag"></span><span class="status-tag" hidden></span></div>
+          <h3 class="event-title"></h3>
+          <p class="event-artist"></p>
+          <p class="event-description"></p>
+          <p class="event-place"></p>
+          <p class="event-address"></p>
+          <p class="event-time"></p>
+        </div>
+        <div class="event-price"><span class="price-label">Билет</span><strong class="price-value"></strong><span class="availability"></span></div>
+      </article>
+    </template>
+  </body>
+</html>
